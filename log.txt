@@ -2,27 +2,7 @@ TIẾN TRÌNH CÔNG VIỆC
 
 Ngày: Fri Apr 11 2025
 
-1. Đã clone repository từ GitHub
-2. Đã xem xét cấu trúc dự án và tìm hiểu mã nguồn
-3. Đã sửa lại Auth.php bỏ phần đăng ký, thay đổi đuôi file từ .twig sang .html
-4. Đã tạo model CountryModel để quản lý quốc gia trong admin
-5. Đã cập nhật schema.sql để thêm bảng countries
-6. Đã tạo controller CountryManager cho quản lý quốc gia
-7. Đã tạo các template HTML cho quản lý quốc gia (index, create, edit)
-8. Đã cập nhật Routes.php để thêm đường dẫn quản lý quốc gia
-9. Đã tạo model CommentModel để cho phép bình luận không cần đăng nhập
-10. Đã tạo controller Comment để xử lý bình luận
-11. Đã tạo các template cho bình luận (comment_item, comment_form, list)
-12. Đã cập nhật Routes.php để thêm đường dẫn cho comment
-13. Đã đọc danh sách công việc hiện tại và đang cập nhật tệp log.txt
-14. Đã tạo controller CommentManager cho phần admin để quản lý bình luận
-15. Đã xem lại controller StoryManager và thấy đã có hỗ trợ sẵn quốc gia mới
-16. Đã cập nhật view Novel để hiển thị bình luận không cần đăng nhập
-17. Đã cập nhật view Chapter để hiển thị bình luận không cần đăng nhập
-18. Đã cập nhật database schema để thêm hỗ trợ phản hồi bình luận
-19. Đã cập nhật CommentModel để hỗ trợ chức năng phản hồi bình luận
-20. Đã thêm tính năng cho admin phản hồi bình luận, bao gồm giao diện và xử lý
-21. Đã cập nhật view hiển thị bình luận để hỗ trợ hiển thị các phản hồi
+AI CHÚ Ý: ĐÁNH DẤU CÔNG VIỆC ĐÃ HOÀN THÀNH LÀ BẮT BUỘC
 
 CÔNG VIỆC CẦN THỰC HIỆN:
 - Tạo template cho quản lý bình luận trong admin (đã hoàn thành - template đã tồn tại)
@@ -30,10 +10,9 @@ CÔNG VIỆC CẦN THỰC HIỆN:
 - Cập nhật view Novel để hiển thị bình luận không cần đăng nhập (đã hoàn thành)
 - Cập nhật view Chapter để hiển thị bình luận không cần đăng nhập (đã hoàn thành)
 - Thêm chức năng cho phép admin trả lời bình luận, cần tạo UI và logic xử lý cho việc admin phản hồi bình luận (đã hoàn thành)
-- Cập nhật Settings để cho phép quản lý tiêu đề, mô tả mặc định
+- Cập nhật Settings để cho phép quản lý tiêu đề, mô tả mặc định thay vì hardcode
 - Kiểm tra và cập nhật tất cả comment code thành tiếng Việt
 - Kiểm tra tất cả liên kết giữa các phần
-- không cần kiểm tra khách bình luận hay không, chỉ cần khai báo tên vì không có chức năng đăng nhập cho khác
 - xoá các tiền tố liên quan đến phim và code liên quan, chuyển phim-hot thành truyen-hot (truyện được đánh giá là hot, sử dụng thuật toán để đánh giá truyện), phim-moi thành truyen-moi (truyện đăng lên gần đây nhất), phim-hoan-thanh thành truyện hoàn thành (truyện với trạng thái đã có tập cuối)
 - Viết các chức năng được khai báo trong routers nhưng chưa có code và view cụ thể
 - Tiếp tục thực hiện các tác vụ theo thứ tự ưu tiên
