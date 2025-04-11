@@ -1,0 +1,24 @@
+{
+    "name": "story-website/ci4-twig",
+    "description": "Vietnamese Story Website using CodeIgniter 4 and Twig",
+    "type": "project",
+    "require": {
+        "php": "^7.4 || ^8.0",
+        "codeigniter4/framework": "^4.0",
+        "twig/twig": "^3.0",
+        "vlucas/phpdotenv": "^5.3",
+        "ext-json": "*",
+        "ext-pgsql": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/"
+        }
+    },
+    "scripts": {
+        "post-install-cmd": [
+            "@php spark serve"
+        ]
+    },
+    "minimum-stability": "stable"
+}

@@ -1,0 +1,87 @@
+<div class="comment mb-3" id="comment-{{ comment.id }}">
+    <div class="d-flex">
+        <div class="comment-avatar mr-3">
+            {% if comment.user_id %}
+                {% if comment.avatar %}
+                <img src="{{ base_url(comment.avatar) }}" alt="{{ comment.username }}" class="rounded-circle" width="50" height="50">
+                {% else %}
+                <div class="avatar-placeholder rounded-circle d-flex align-items-center justify-content-center bg-primary text-white" style="width: 50px; height: 50px;">
+                    {{ comment.username|slice(0, 1)|upper }}
+                </div>
+                {% endif %}
+            {% else %}
+                <div class="avatar-placeholder rounded-circle d-flex align-items-center justify-content-center bg-secondary text-white" style="width: 50px; height: 50px;">
+                    {{ comment.guest_name|slice(0, 1)|upper }}
+                </div>
+            {% endif %}
+        </div>
+        <div class="comment-content flex-grow-1">
+            <div class="card">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center py-2">
+                    <div>
+                        <strong>
+                            {% if comment.user_id %}
+                                {{ comment.username }}
+                                {% if comment.role == 'admin' %}
+                                <span class="badge badge-danger">Admin</span>
+                                {% endif %}
+                            {% else %}
+                                {{ comment.guest_name }}
+                                <span class="badge badge-secondary">Khách</span>
+                            {% endif %}
+                        </strong>
+                        <small class="text-muted ml-2">
+                            {{ comment.created_at|date('d/m/Y H:i') }}
+                        </small>
+                    </div>
+
+                    {% if session().get('isLoggedIn') and (session().get('user').id == comment.user_id or session().get('user').role == 'admin') %}
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-link text-muted" type="button" data-toggle="dropdown">
+                            <i class="fas fa-ellipsis-v"></i>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <button class="dropdown-item delete-comment" data-id="{{ comment.id }}">
+                                <i class="fas fa-trash-alt text-danger"></i> Xóa
+                            </button>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="card-body py-2">
+                    <p class="card-text mb-0">{{ comment.content }}</p>
+                </div>
+
+                {% if comment.replies and comment.replies|length > 0 %}
+                <div class="replies-container px-3 py-2 bg-light">
+                    <h6 class="text-muted mb-2"><i class="fas fa-reply"></i> Phản hồi ({{ comment.replies|length }})</h6>
+
+                    {% for reply in comment.replies %}
+                    <div class="reply-item mb-2 {% if not loop.last %}border-bottom pb-2{% endif %}">
+                        <div class="d-flex">
+                            <div class="flex-shrink-0 mr-2">
+                                {% if reply.is_admin_reply %}
+                                <span class="badge badge-danger">Admin</span>
+                                {% else %}
+                                    {% if reply.user_id %}
+                                    <span class="badge badge-info">{{ reply.username }}</span>
+                                    {% else %}
+                                    <span class="badge badge-secondary">{{ reply.guest_name }}</span>
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="reply-content">
+                                    {{ reply.content }}
+                                </div>
+                                <small class="text-muted">{{ reply.created_at|date('d/m/Y H:i') }}</small>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>

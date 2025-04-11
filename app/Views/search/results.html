@@ -1,0 +1,180 @@
+{% extends "layouts/main.html" %}
+
+{% block title %}Kết quả tìm kiếm: {{ query }}{% endblock %}
+{% block meta_description %}Kết quả tìm kiếm cho "{{ query }}" - Tìm truyện bạn muốn đọc{% endblock %}
+
+{% block content %}
+<!-- Search Header -->
+<div class="py-3 mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <h1 class="mb-0">
+            <i class="fas fa-search me-2 text-primary"></i>Kết quả tìm kiếm: "{{ query }}"
+        </h1>
+        <div class="dropdown">
+            <button class="btn btn-outline-light dropdown-toggle" type="button" id="sortDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-sort me-1"></i> Sắp xếp
+            </button>
+            <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end" aria-labelledby="sortDropdown">
+                <li><a class="dropdown-item" href="{{ base_url() }}/tim-kiem?q={{ query }}&sort=latest">Mới nhất</a></li>
+                <li><a class="dropdown-item" href="{{ base_url() }}/tim-kiem?q={{ query }}&sort=popular">Xem nhiều</a></li>
+                <li><a class="dropdown-item" href="{{ base_url() }}/tim-kiem?q={{ query }}&sort=rating">Đánh giá cao</a></li>
+                <li><a class="dropdown-item" href="{{ base_url() }}/tim-kiem?q={{ query }}&sort=completed">Hoàn thành</a></li>
+            </ul>
+        </div>
+    </div>
+    <p class="text-muted">Tìm thấy {{ total_results }} kết quả</p>
+</div>
+
+<!-- Result Filters -->
+<div class="card bg-dark mb-4">
+    <div class="card-body">
+        <h5 class="card-title mb-3">Bộ lọc tìm kiếm</h5>
+        <form action="{{ base_url() }}/tim-kiem" method="GET" class="row g-3">
+            <input type="hidden" name="q" value="{{ query }}">
+
+            <div class="col-lg-3 col-md-6">
+                <label for="category" class="form-label">Thể loại</label>
+                <select class="form-select bg-dark text-light" id="category" name="category">
+                    <option value="">Tất cả thể loại</option>
+                    {% for category in categories %}
+                    <option value="{{ category.slug }}" {{ selected_category == category.slug ? 'selected' : '' }}>{{ category.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <label for="status" class="form-label">Trạng thái</label>
+                <select class="form-select bg-dark text-light" id="status" name="status">
+                    <option value="">Tất cả trạng thái</option>
+                    <option value="ongoing" {{ status == 'ongoing' ? 'selected' : '' }}>Đang ra</option>
+                    <option value="completed" {{ status == 'completed' ? 'selected' : '' }}>Hoàn thành</option>
+                </select>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <label for="sort" class="form-label">Sắp xếp</label>
+                <select class="form-select bg-dark text-light" id="sort" name="sort">
+                    <option value="latest" {{ sort == 'latest' ? 'selected' : '' }}>Mới nhất</option>
+                    <option value="popular" {{ sort == 'popular' ? 'selected' : '' }}>Xem nhiều</option>
+                    <option value="rating" {{ sort == 'rating' ? 'selected' : '' }}>Đánh giá cao</option>
+                    <option value="chapters" {{ sort == 'chapters' ? 'selected' : '' }}>Số chương</option>
+                </select>
+            </div>
+
+            <div class="col-lg-3 col-md-6 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="fas fa-filter me-1"></i> Lọc kết quả
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Search Results -->
+<div class="row">
+    {% if novels|length > 0 %}
+        {% for novel in novels %}
+        <div class="col-6 col-md-4 col-lg-3 mb-4">
+            <div class="novel-card">
+                <div class="card-img-container position-relative">
+                    <img src="{{ novel.cover_image }}" class="card-img-top" alt="{{ novel.title }}">
+                    <div class="card-img-overlay d-flex flex-column justify-content-between p-2">
+                        <div>
+                            {% if novel.is_hot %}
+                            <span class="badge badge-hot">Hot</span>
+                            {% endif %}
+
+                            {% if novel.is_completed %}
+                            <span class="badge badge-completed">Full</span>
+                            {% else %}
+                            <span class="badge badge-new">New</span>
+                            {% endif %}
+                        </div>
+                        <div class="text-end">
+                            <span class="badge badge-chapter">{{ novel.latest_chapter }} chương</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-2">
+                    <h6 class="card-title text-truncate">
+                        <a href="{{ base_url() }}/truyen/{{ novel.slug }}" class="text-decoration-none text-light">
+                            {{ novel.title }}
+                        </a>
+                    </h6>
+                    <div class="small text-muted text-truncate mb-2">
+                        <i class="fas fa-user-edit me-1"></i>{{ novel.author_name }}
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted"><i class="fas fa-eye"></i> {{ novel.views|format_number }}</small>
+                        <small class="text-warning">
+                            <i class="fas fa-star"></i> {{ novel.rating|number_format(1) }}
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="col-12">
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i>Không tìm thấy truyện nào khớp với từ khóa "{{ query }}".
+                <div class="mt-3">
+                    <p>Gợi ý:</p>
+                    <ul>
+                        <li>Kiểm tra lại chính tả của từ khóa</li>
+                        <li>Sử dụng từ khóa khác hoặc từ khóa ngắn hơn</li>
+                        <li>Thử tìm kiếm theo tên tác giả</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Pagination -->
+{% if total_pages > 1 %}
+<div class="pagination-container mt-4" data-total-pages="{{ total_pages }}">
+    <nav aria-label="Phân trang kết quả tìm kiếm">
+        <ul class="pagination justify-content-center">
+            <li class="page-item {{ current_page <= 1 ? 'disabled' : '' }}">
+                <a class="page-link" href="{{ base_url() }}/tim-kiem?q={{ query }}&page={{ current_page - 1 }}{{ sort ? '&sort=' ~ sort : '' }}{{ status ? '&status=' ~ status : '' }}{{ selected_category ? '&category=' ~ selected_category : '' }}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+
+            {% for i in 1..total_pages %}
+                {% if i == 1 or i == total_pages or i >= current_page - 2 and i <= current_page + 2 %}
+                    <li class="page-item {{ i == current_page ? 'active' : '' }}">
+                        <a class="page-link" href="{{ base_url() }}/tim-kiem?q={{ query }}&page={{ i }}{{ sort ? '&sort=' ~ sort : '' }}{{ status ? '&status=' ~ status : '' }}{{ selected_category ? '&category=' ~ selected_category : '' }}">{{ i }}</a>
+                    </li>
+                {% elseif i == 2 or i == total_pages - 1 %}
+                    <li class="page-item disabled">
+                        <span class="page-link">...</span>
+                    </li>
+                {% endif %}
+            {% endfor %}
+
+            <li class="page-item {{ current_page >= total_pages ? 'disabled' : '' }}">
+                <a class="page-link" href="{{ base_url() }}/tim-kiem?q={{ query }}&page={{ current_page + 1 }}{{ sort ? '&sort=' ~ sort : '' }}{{ status ? '&status=' ~ status : '' }}{{ selected_category ? '&category=' ~ selected_category : '' }}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</div>
+{% endif %}
+
+<!-- Trending Searches -->
+<div class="card bg-dark mt-5">
+    <div class="card-header">
+        <h5 class="mb-0"><i class="fas fa-fire me-2 text-danger"></i>Từ khóa nổi bật</h5>
+    </div>
+    <div class="card-body">
+        <div class="d-flex flex-wrap gap-2">
+            {% for term in trending_search_terms %}
+            <a href="{{ base_url() }}/tim-kiem?q={{ term }}" class="btn btn-outline-light">{{ term }}</a>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?= $title ?> - Web Truyện</title>
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="<?= base_url() ?>/assets/images/favicon.ico" type="image/x-icon">
+
+    <!-- CSS files -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="<?= base_url() ?>/assets/css/style.css" rel="stylesheet">
+</head>
+<body class="bg-dark text-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <div class="install-wrapper">
+                    <div class="text-center mb-4">
+                        <h1 class="mb-3">Cài Đặt Hệ Thống Web Truyện</h1>
+                        <p class="text-muted">Tạo tài khoản quản trị viên và cấu hình trang web</p>
+                    </div>
+
+                    <!-- Installation Progress -->
+                    <div class="progress mb-4" style="height: 10px;">
+                        <div class="progress-bar bg-primary" role="progressbar" style="width: 75%;" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+
+                    <!-- Step Indicators -->
+                    <div class="d-flex justify-content-between mb-5">
+                        <div class="text-center">
+                            <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center mb-2" style="width: 40px; height: 40px;">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="small">Kiểm tra hệ thống</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center mb-2" style="width: 40px; height: 40px;">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="small">Cấu hình CSDL</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mb-2" style="width: 40px; height: 40px;">3</div>
+                            <div class="small">Tài khoản Admin</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center mb-2" style="width: 40px; height: 40px;">4</div>
+                            <div class="small">Hoàn thành</div>
+                        </div>
+                    </div>
+
+                    <!-- Flash Messages -->
+                    <?php if (session()->getFlashdata('error')) : ?>
+                    <div class="alert alert-danger">
+                        <?= session()->getFlashdata('error') ?>
+                    </div>
+                    <?php endif; ?>
+
+                    <?php if (session()->getFlashdata('success')) : ?>
+                    <div class="alert alert-success">
+                        <?= session()->getFlashdata('success') ?>
+                    </div>
+                    <?php endif; ?>
+
+                    <!-- Admin Account Form -->
+                    <div class="install-step">
+                        <div class="install-step-header">
+                            <div class="install-step-number">3</div>
+                            <h3 class="install-step-title">Tạo tài khoản quản trị viên</h3>
+                        </div>
+
+                        <form action="<?= base_url('install/processAdminSetup') ?>" method="post">
+                            <h5 class="mb-3 border-bottom pb-2">Thông tin quản trị viên</h5>
+
+                            <div class="mb-3">
+                                <label for="username" class="form-label">Tên đăng nhập</label>
+                                <input type="text" class="form-control" id="username" name="username" value="<?= session()->getFlashdata('input.username') ?? 'admin' ?>" required>
+                                <div class="form-text">Tên đăng nhập dài ít nhất 4 ký tự, chỉ bao gồm chữ cái và số.</div>
+                                <?php if (session()->getFlashdata('errors.username')) : ?>
+                                    <div class="invalid-feedback d-block"><?= session()->getFlashdata('errors.username') ?></div>
+                                <?php endif; ?>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" name="email" value="<?= session()->getFlashdata('input.email') ?? 'admin@example.com' ?>" required>
+                                <?php if (session()->getFlashdata('errors.email')) : ?>
+                                    <div class="invalid-feedback d-block"><?= session()->getFlashdata('errors.email') ?></div>
+                                <?php endif; ?>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Mật khẩu</label>
+                                <input type="password" class="form-control" id="password" name="password" required>
+                                <div class="form-text">Mật khẩu dài ít nhất 6 ký tự</div>
+                                <?php if (session()->getFlashdata('errors.password')) : ?>
+                                    <div class="invalid-feedback d-block"><?= session()->getFlashdata('errors.password') ?></div>
+                                <?php endif; ?>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="password_confirm" class="form-label">Xác nhận mật khẩu</label>
+                                <input type="password" class="form-control" id="password_confirm" name="password_confirm" required>
+                                <?php if (session()->getFlashdata('errors.password_confirm')) : ?>
+                                    <div class="invalid-feedback d-block"><?= session()->getFlashdata('errors.password_confirm') ?></div>
+                                <?php endif; ?>
+                            </div>
+
+                            <h5 class="mb-3 border-bottom pb-2">Thông tin trang web</h5>
+
+                            <div class="mb-3">
+                                <label for="site_name" class="form-label">Tên trang web</label>
+                                <input type="text" class="form-control" id="site_name" name="site_name" value="<?= session()->getFlashdata('input.site_name') ?? 'Web Truyện' ?>" required>
+                                <?php if (session()->getFlashdata('errors.site_name')) : ?>
+                                    <div class="invalid-feedback d-block"><?= session()->getFlashdata('errors.site_name') ?></div>
+                                <?php endif; ?>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="site_description" class="form-label">Mô tả trang web</label>
+                                <textarea class="form-control" id="site_description" name="site_description" rows="3"><?= session()->getFlashdata('input.site_description') ?? 'Đọc truyện online, cập nhật nhiều truyện hay và mới nhất, nhiều thể loại truyện khác nhau.' ?></textarea>
+                            </div>
+
+                            <!-- Navigation Buttons -->
+                            <div class="d-flex justify-content-between mt-4">
+                                <a href="<?= base_url('install/database') ?>" class="btn btn-secondary">
+                                    <i class="fas fa-arrow-left me-2"></i> Quay lại
+                                </a>
+
+                                <button type="submit" class="btn btn-primary">
+                                    Hoàn thành cài đặt <i class="fas fa-arrow-right ms-2"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-center py-4">
+        <div class="container">
+            <p class="mb-0 text-muted">© <?= date('Y') ?> Web Truyện. Tất cả các quyền được bảo lưu.</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript files -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

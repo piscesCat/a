@@ -1,0 +1,342 @@
+{% extends "layouts/main.html" %}
+
+{% block title %}{{ novel.title }}{% endblock %}
+{% block meta_description %}{{ novel.description|limit_text(160) }}{% endblock %}
+{% block meta_keywords %}{{ novel.title }}, đọc truyện online, {{ novel.author_name }}, truyện hay{% endblock %}
+
+{% block content %}
+<!-- Novel Details Section -->
+<div class="novel-detail-container">
+    <div class="row">
+        <!-- Novel Cover and Quick Info -->
+        <div class="col-md-3 mb-4">
+            <img src="{{ novel.cover_image }}" alt="{{ novel.title }}" class="novel-cover img-fluid mb-3">
+
+            <!-- Novel Actions -->
+            <div class="novel-actions d-grid gap-2">
+                <a href="{{ base_url() }}/truyen/{{ novel.slug }}/chuong-1" class="btn btn-primary btn-lg">
+                    <i class="fas fa-book-open me-2"></i>Đọc Từ Đầu
+                </a>
+
+                {% if latest_chapter %}
+                <a href="{{ base_url() }}/truyen/{{ novel.slug }}/chuong-{{ latest_chapter.chapter_number }}" class="btn btn-success">
+                    <i class="fas fa-bookmark me-2"></i>Đọc Mới Nhất
+                </a>
+                {% endif %}
+
+                {% if current_user %}
+                    {% if reading_progress %}
+                    <a href="{{ base_url() }}/truyen/{{ novel.slug }}/chuong-{{ reading_progress.chapter_number }}" class="btn btn-info">
+                        <i class="fas fa-history me-2"></i>Đọc Tiếp (Chương {{ reading_progress.chapter_number }})
+                    </a>
+                    {% endif %}
+
+                    <button id="bookmark-btn" class="btn {{ is_bookmarked ? 'btn-primary' : 'btn-outline-primary' }}" data-novel-id="{{ novel.id }}">
+                        <i class="fa{{ is_bookmarked ? 's' : 'r' }} fa-bookmark me-1"></i>{{ is_bookmarked ? 'Đã Lưu' : 'Lưu Truyện' }}
+                    </button>
+                {% else %}
+                    <a href="{{ base_url() }}/dang-nhap?redirect={{ current_url|url_encode }}" class="btn btn-outline-primary">
+                        <i class="far fa-bookmark me-1"></i>Lưu Truyện
+                    </a>
+                {% endif %}
+            </div>
+
+            <!-- Novel Stats -->
+            <div class="card bg-dark mt-3">
+                <div class="card-body">
+                    <h5 class="card-title">Thông Tin</h5>
+                    <div class="novel-stats">
+                        <div class="d-flex mb-2">
+                            <div style="width: 30px"><i class="fas fa-eye"></i></div>
+                            <div>{{ novel.views|format_number }} lượt xem</div>
+                        </div>
+                        <div class="d-flex mb-2">
+                            <div style="width: 30px"><i class="fas fa-book"></i></div>
+                            <div>{{ chapters|length }} chương</div>
+                        </div>
+                        <div class="d-flex mb-2">
+                            <div style="width: 30px"><i class="fas fa-star text-warning"></i></div>
+                            <div>{{ novel.rating|number_format(1) }} ({{ ratings_count }} đánh giá)</div>
+                        </div>
+                        <div class="d-flex mb-2">
+                            <div style="width: 30px"><i class="fas fa-bookmark"></i></div>
+                            <div>{{ bookmarks_count }} lượt lưu</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rate novel card -->
+            {% if current_user %}
+            <div class="card bg-dark mt-3">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Đánh Giá Truyện</h5>
+                    <form action="{{ base_url() }}/api/rate-novel" method="POST" class="rating-form">
+                        <input type="hidden" name="novel_id" value="{{ novel.id }}">
+                        <div class="rating">
+                            {% for i in 1..5 %}
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="rating" id="rating{{ i }}" value="{{ i }}" {% if user_rating == i %}checked{% endif %}>
+                                <label class="form-check-label" for="rating{{ i }}">
+                                    <i class="fa{{ i <= user_rating ? 's' : 'r' }} fa-star text-warning"></i>
+                                </label>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <button type="submit" class="btn btn-sm btn-outline-warning mt-2">Gửi Đánh Giá</button>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Novel Details -->
+        <div class="col-md-9">
+            <h1 class="novel-title">{{ novel.title }}</h1>
+
+            <div class="novel-meta">
+                <span class="me-3"><i class="fas fa-user-edit me-1"></i>{{ novel.author_name }}</span>
+                <span class="me-3"><i class="fas fa-clock me-1"></i>Cập nhật: {{ novel.updated_at|time_ago }}</span>
+                {% if novel.is_completed %}
+                <span class="badge badge-completed">Hoàn Thành</span>
+                {% else %}
+                <span class="badge badge-new">Đang Ra</span>
+                {% endif %}
+            </div>
+
+            <!-- Categories -->
+            <div class="mb-3">
+                {% for category in categories %}
+                <a href="{{ base_url() }}/the-loai/{{ category.slug }}" class="badge bg-secondary me-1">
+                    {{ category.name }}
+                </a>
+                {% endfor %}
+            </div>
+
+            <!-- Novel Description -->
+            <div class="card bg-dark mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Giới Thiệu</h5>
+                </div>
+                <div class="card-body">
+                    <div class="novel-description">
+                        {{ novel.description|nl2br }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chapter List -->
+            <div class="card bg-dark">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Danh Sách Chương</h5>
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-outline-light dropdown-toggle" type="button" id="chapterSortDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            Sắp xếp
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="chapterSortDropdown">
+                            <li><a class="dropdown-item chapter-sort" href="#" data-sort="desc">Mới nhất</a></li>
+                            <li><a class="dropdown-item chapter-sort" href="#" data-sort="asc">Cũ nhất</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="chapter-list">
+                        {% for chapter in chapters %}
+                        <div class="chapter-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h6 class="chapter-title">
+                                    <a href="{{ base_url() }}/truyen/{{ novel.slug }}/chuong-{{ chapter.chapter_number }}">
+                                        Chương {{ chapter.chapter_number }}: {{ chapter.title }}
+                                    </a>
+                                </h6>
+                                <div class="chapter-meta">
+                                    {{ chapter.created_at|time_ago }}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Pagination if needed -->
+                    {% if total_pages > 1 %}
+                    <div class="pagination-container mt-4" data-total-pages="{{ total_pages }}">
+                        <nav>
+                            <ul class="pagination justify-content-center">
+                                <li class="page-item {{ current_page <= 1 ? 'disabled' : '' }}">
+                                    <a class="page-link" href="{{ base_url() }}/truyen/{{ novel.slug }}?page={{ current_page - 1 }}" aria-label="Previous">
+                                        <span aria-hidden="true">&laquo;</span>
+                                    </a>
+                                </li>
+
+                                {% for i in 1..total_pages %}
+                                    {% if i == 1 or i == total_pages or i >= current_page - 2 and i <= current_page + 2 %}
+                                        <li class="page-item {{ i == current_page ? 'active' : '' }}">
+                                            <a class="page-link" href="{{ base_url() }}/truyen/{{ novel.slug }}?page={{ i }}">{{ i }}</a>
+                                        </li>
+                                    {% elseif i == 2 or i == total_pages - 1 %}
+                                        <li class="page-item disabled">
+                                            <span class="page-link">...</span>
+                                        </li>
+                                    {% endif %}
+                                {% endfor %}
+
+                                <li class="page-item {{ current_page >= total_pages ? 'disabled' : '' }}">
+                                    <a class="page-link" href="{{ base_url() }}/truyen/{{ novel.slug }}?page={{ current_page + 1 }}" aria-label="Next">
+                                        <span aria-hidden="true">&raquo;</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Similar Novels Section -->
+<div class="section mt-5">
+    <h2 class="section-title">
+        <i class="fas fa-book-reader text-primary me-2"></i>Truyện Cùng Thể Loại
+    </h2>
+
+    <div class="row">
+        {% for similar_novel in similar_novels %}
+        <div class="col-6 col-md-4 col-lg-2 mb-3">
+            <div class="novel-card">
+                <div class="card-img-container position-relative">
+                    <img src="{{ similar_novel.cover_image }}" class="card-img-top" alt="{{ similar_novel.title }}">
+                    <div class="card-img-overlay d-flex flex-column justify-content-between p-2">
+                        <div>
+                            {% if similar_novel.is_completed %}
+                            <span class="badge badge-completed">Full</span>
+                            {% else %}
+                            <span class="badge badge-new">New</span>
+                            {% endif %}
+                        </div>
+                        <div class="text-end">
+                            <span class="badge badge-chapter">{{ similar_novel.latest_chapter }} chương</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-2">
+                    <h6 class="card-title text-truncate">
+                        <a href="{{ base_url() }}/truyen/{{ similar_novel.slug }}" class="text-decoration-none text-light">
+                            {{ similar_novel.title }}
+                        </a>
+                    </h6>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Comments Section -->
+<div class="section mt-5">
+    <h2 class="section-title">
+        <i class="fas fa-comments text-success me-2"></i>Bình Luận
+    </h2>
+
+    <div class="card bg-dark">
+        <div class="card-body">
+            <!-- Comment Form -->
+            {% include 'comments/comment_form.html' with {
+                'action_url': base_url() ~ '/comments/story',
+                'story_id': novel.id
+            } %}
+
+            <!-- Comments List -->
+            {% include 'comments/list.html' with {
+                'comments': comments,
+                'total_comments': total_comments,
+                'story_id': novel.id,
+                'has_more': total_comments > comments|length
+            } %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Chapter sorting
+    const chapterSortLinks = document.querySelectorAll('.chapter-sort');
+    const chapterList = document.querySelector('.chapter-list');
+    const chapterItems = Array.from(document.querySelectorAll('.chapter-item'));
+
+    chapterSortLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const sortDirection = this.dataset.sort;
+
+            // Get current sort direction
+            const currentSort = chapterList.dataset.sort || 'desc';
+
+            // Only sort if direction changed
+            if (currentSort !== sortDirection) {
+                // Clone and sort items
+                const sortedItems = chapterItems.slice().sort((a, b) => {
+                    const aNum = parseInt(a.querySelector('.chapter-title a').textContent.match(/Chương (\d+):/)[1]);
+                    const bNum = parseInt(b.querySelector('.chapter-title a').textContent.match(/Chương (\d+):/)[1]);
+
+                    return sortDirection === 'asc' ? aNum - bNum : bNum - aNum;
+                });
+
+                // Clear list and append sorted items
+                chapterList.innerHTML = '';
+                sortedItems.forEach(item => chapterList.appendChild(item));
+
+                // Set current sort direction
+                chapterList.dataset.sort = sortDirection;
+            }
+        });
+    });
+
+    // Rating form AJAX submission
+    const ratingForm = document.querySelector('.rating-form');
+    if (ratingForm) {
+        ratingForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+
+            fetch(this.action, {
+                method: 'POST',
+                body: new URLSearchParams(formData),
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Show success message
+                    alert('Cảm ơn bạn đã đánh giá!');
+
+                    // Update UI
+                    const stars = document.querySelectorAll('.rating label i');
+                    const rating = parseInt(formData.get('rating'));
+
+                    stars.forEach((star, index) => {
+                        if (index < rating) {
+                            star.classList.remove('far');
+                            star.classList.add('fas');
+                        } else {
+                            star.classList.remove('fas');
+                            star.classList.add('far');
+                        }
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Có lỗi xảy ra khi gửi đánh giá. Vui lòng thử lại sau.');
+            });
+        });
+    }
+});
+</script>
+{% endblock %}

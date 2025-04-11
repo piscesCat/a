@@ -1,0 +1,464 @@
+/* Global styles */
+:root {
+    --primary-color: #007bff;
+    --secondary-color: #6c757d;
+    --dark-bg: #121212;
+    --darker-bg: #0a0a0a;
+    --card-bg: #1e1e1e;
+    --text-light: #f8f9fa;
+    --text-muted: #adb5bd;
+    --border-color: #2d2d2d;
+    --success-color: #28a745;
+    --danger-color: #dc3545;
+    --warning-color: #ffc107;
+    --info-color: #17a2b8;
+}
+
+body {
+    background-color: var(--dark-bg);
+    color: var(--text-light);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+}
+
+/* Header and Navigation */
+.navbar {
+    background-color: var(--darker-bg) !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand img {
+    max-height: 40px;
+}
+
+.nav-link {
+    color: var(--text-light) !important;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    transition: color 0.3s;
+}
+
+.nav-link:hover {
+    color: var(--primary-color) !important;
+}
+
+.dropdown-menu {
+    background-color: var(--darker-bg);
+    border: 1px solid var(--border-color);
+}
+
+.dropdown-item {
+    color: var(--text-light);
+}
+
+.dropdown-item:hover {
+    background-color: var(--card-bg);
+    color: var(--primary-color);
+}
+
+/* Search */
+.search-form .form-control {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-light);
+}
+
+.search-form .form-control:focus {
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    border-color: var(--primary-color);
+}
+
+.search-suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 0.25rem;
+    max-height: 300px;
+    overflow-y: auto;
+    display: none;
+}
+
+.search-suggestions.show {
+    display: block;
+}
+
+.suggestion-item {
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.suggestion-item:hover {
+    background-color: var(--darker-bg);
+}
+
+.suggestion-img {
+    width: 40px;
+    height: 60px;
+    object-fit: cover;
+    margin-right: 0.5rem;
+}
+
+.suggestion-title {
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+}
+
+/* Section Titles */
+.section-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    border-left: 4px solid var(--primary-color);
+    padding-left: 0.75rem;
+}
+
+/* Novel Cards */
+.novel-card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s;
+    height: 100%;
+}
+
+.novel-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.card-img-container {
+    position: relative;
+    padding-top: 150%; /* Aspect ratio 2:3 for novel covers */
+    overflow: hidden;
+}
+
+.card-img-container img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s;
+}
+
+.novel-card:hover .card-img-container img {
+    transform: scale(1.05);
+}
+
+.card-img-overlay {
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.8));
+    padding: 0.5rem;
+}
+
+.card-body {
+    padding: 0.75rem;
+}
+
+.card-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    line-height: 1.4;
+}
+
+.card-title a {
+    color: var(--text-light);
+    text-decoration: none;
+}
+
+.card-title a:hover {
+    color: var(--primary-color);
+}
+
+.card-text {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+/* Badge styles */
+.badge {
+    font-weight: 500;
+    padding: 0.35em 0.65em;
+    font-size: 0.75em;
+}
+
+.badge-hot {
+    background-color: var(--danger-color);
+    color: white;
+}
+
+.badge-new {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.badge-completed {
+    background-color: var(--success-color);
+    color: white;
+}
+
+.badge-chapter {
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+}
+
+/* Banner */
+.banner-wrapper {
+    margin-bottom: 1.5rem;
+}
+
+.banner-wrapper img {
+    width: 100%;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* List group */
+.list-group-item {
+    background-color: var(--card-bg);
+    border-color: var(--border-color);
+    color: var(--text-light);
+}
+
+.list-group-item:hover {
+    background-color: var(--darker-bg);
+}
+
+.list-group-item-action:focus, .list-group-item-action:hover {
+    color: var(--text-light);
+}
+
+/* Novel details page */
+.novel-detail-container {
+    background-color: var(--card-bg);
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.novel-cover {
+    width: 100%;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.novel-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.novel-meta {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.novel-description {
+    margin-top: 1rem;
+    line-height: 1.7;
+}
+
+.novel-stats {
+    display: flex;
+    gap: 1.5rem;
+    margin: 1rem 0;
+}
+
+.novel-actions {
+    margin: 1.5rem 0;
+}
+
+/* Chapter list */
+.chapter-list {
+    background-color: var(--card-bg);
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+}
+
+.chapter-item {
+    padding: 0.75rem;
+    border-bottom: 1px solid var(--border-color);
+    transition: background-color 0.2s;
+}
+
+.chapter-item:last-child {
+    border-bottom: none;
+}
+
+.chapter-item:hover {
+    background-color: var(--darker-bg);
+}
+
+.chapter-title {
+    font-weight: 500;
+    margin: 0;
+}
+
+.chapter-title a {
+    color: var(--text-light);
+    text-decoration: none;
+}
+
+.chapter-title a:hover {
+    color: var(--primary-color);
+}
+
+.chapter-meta {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+}
+
+/* Chapter reading page */
+.chapter-container {
+    background-color: var(--card-bg);
+    border-radius: 0.5rem;
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+}
+
+.chapter-heading {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.chapter-heading h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.chapter-heading .novel-title {
+    font-size: 1rem;
+    color: var(--text-muted);
+}
+
+.chapter-content {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    margin-bottom: 2rem;
+}
+
+.chapter-content p {
+    margin-bottom: 1.5rem;
+}
+
+.chapter-navigation {
+    display: flex;
+    justify-content: space-between;
+    margin: 2rem 0;
+}
+
+/* Category filters */
+.category-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.category-filter {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-light);
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.category-filter:hover, .category-filter.active {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+}
+
+/* Pagination */
+.pagination {
+    margin-top: 1.5rem;
+}
+
+.page-item .page-link {
+    background-color: var(--card-bg);
+    border-color: var(--border-color);
+    color: var(--text-light);
+}
+
+.page-item.active .page-link {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.page-item .page-link:hover {
+    background-color: var(--darker-bg);
+    color: var(--primary-color);
+}
+
+/* Footer */
+footer {
+    background-color: var(--darker-bg);
+    padding: 3rem 0;
+    margin-top: 3rem;
+}
+
+footer h5 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1.25rem;
+    color: var(--text-light);
+}
+
+footer ul li {
+    margin-bottom: 0.75rem;
+}
+
+footer a {
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+footer a:hover {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+/* Responsive */
+@media (max-width: 767.98px) {
+    .novel-title {
+        font-size: 1.5rem;
+    }
+
+    .chapter-container {
+        padding: 1rem;
+    }
+
+    .chapter-content {
+        font-size: 1rem;
+    }
+
+    .section-title {
+        font-size: 1.25rem;
+    }
+}
+
+/* Loading spinner */
+.spinner-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 200px;
+}
+
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
+}

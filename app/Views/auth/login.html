@@ -1,0 +1,55 @@
+{% extends 'layouts/main.html' %}
+
+{% block title %}Đăng nhập{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Đăng nhập</h4>
+                </div>
+                <div class="card-body">
+                    {% if session().has('error') %}
+                    <div class="alert alert-danger">
+                        {{ session('error') }}
+                    </div>
+                    {% endif %}
+
+                    {% if session().has('success') %}
+                    <div class="alert alert-success">
+                        {{ session('success') }}
+                    </div>
+                    {% endif %}
+
+                    <form action="{{ site_url('login/attempt') }}" method="post">
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Mật khẩu</label>
+                            <input type="password" class="form-control" id="password" name="password" required>
+                        </div>
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="remember" name="remember">
+                                    <label class="form-check-label" for="remember">
+                                        Ghi nhớ đăng nhập
+                                    </label>
+                                </div>
+                                <a href="{{ site_url('forgot-password') }}">Quên mật khẩu?</a>
+                            </div>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">Đăng nhập</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

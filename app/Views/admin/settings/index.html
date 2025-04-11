@@ -1,0 +1,291 @@
+{% extends "layouts/admin.html" %}
+
+{% block title %}Cài Đặt Hệ Thống{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3">Cài Đặt Hệ Thống</h1>
+        <div>
+            <a href="{{ base_url() }}/admin/settings/email" class="btn btn-primary">
+                <i class="fas fa-envelope me-1"></i> Cài đặt Email
+            </a>
+            <a href="{{ base_url() }}/admin/settings/seo" class="btn btn-info text-white">
+                <i class="fas fa-search me-1"></i> Cài đặt SEO
+            </a>
+            <a href="{{ base_url() }}/admin/settings/social" class="btn btn-success">
+                <i class="fas fa-share-alt me-1"></i> Mạng Xã Hội
+            </a>
+        </div>
+    </div>
+
+    {% if session.getFlashdata('success') %}
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {{ session.getFlashdata('success') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endif %}
+
+    {% if session.getFlashdata('error') %}
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        {{ session.getFlashdata('error') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endif %}
+
+    <div class="card bg-dark">
+        <div class="card-body">
+            <form action="{{ base_url() }}/admin/settings/save" method="post" enctype="multipart/form-data">
+                {{ csrf_field() }}
+
+                <ul class="nav nav-tabs mb-3" id="settingsTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="general-tab" data-bs-toggle="tab" data-bs-target="#general" type="button" role="tab" aria-controls="general" aria-selected="true">Cài Đặt Chung</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="display-tab" data-bs-toggle="tab" data-bs-target="#display" type="button" role="tab" aria-controls="display" aria-selected="false">Hiển Thị</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="templates-tab" data-bs-toggle="tab" data-bs-target="#templates" type="button" role="tab" aria-controls="templates" aria-selected="false">Mẫu Mặc Định</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="advanced-tab" data-bs-toggle="tab" data-bs-target="#advanced" type="button" role="tab" aria-controls="advanced" aria-selected="false">Nâng Cao</button>
+                    </li>
+                </ul>
+
+                <div class="tab-content" id="settingsTabsContent">
+                    <!-- General Settings -->
+                    <div class="tab-pane fade show active" id="general" role="tabpanel" aria-labelledby="general-tab">
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="site_name" class="form-label">Tên Trang Web</label>
+                                    <input type="text" class="form-control" id="site_name" name="site_name" value="{{ settings.site_name }}">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="site_description" class="form-label">Mô Tả Trang Web</label>
+                                    <textarea class="form-control" id="site_description" name="site_description" rows="3">{{ settings.site_description }}</textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="maintenance_mode" class="form-label">Chế Độ Bảo Trì</label>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="maintenance_mode" name="maintenance_mode" value="1" {% if settings.maintenance_mode == 'on' %}checked{% endif %}>
+                                        <label class="form-check-label" for="maintenance_mode">Bật chế độ bảo trì</label>
+                                    </div>
+                                    <div class="form-text text-light-50">Khi bật, người dùng thông thường sẽ thấy trang bảo trì</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="site_logo_file" class="form-label">Logo Trang Web</label>
+                                    <input type="file" class="form-control" id="site_logo_file" name="site_logo_file" accept="image/*">
+                                    <div class="form-text text-light-50">Kích thước đề xuất: 200x50 pixel</div>
+                                    {% if settings.site_logo %}
+                                    <div class="mt-2">
+                                        <img src="{{ base_url() }}{{ settings.site_logo }}" alt="Logo hiện tại" height="50" class="border bg-white p-1">
+                                        <input type="hidden" name="site_logo" value="{{ settings.site_logo }}">
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <div class="mb-3">
+                                    <label for="site_favicon_file" class="form-label">Favicon</label>
+                                    <input type="file" class="form-control" id="site_favicon_file" name="site_favicon_file" accept="image/x-icon,image/png">
+                                    <div class="form-text text-light-50">Kích thước đề xuất: 32x32 pixel (định dạng .ico hoặc .png)</div>
+                                    {% if settings.site_favicon %}
+                                    <div class="mt-2">
+                                        <img src="{{ base_url() }}{{ settings.site_favicon }}" alt="Favicon hiện tại" height="32" width="32" class="border bg-white p-1">
+                                        <input type="hidden" name="site_favicon" value="{{ settings.site_favicon }}">
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Display Settings -->
+                    <div class="tab-pane fade" id="display" role="tabpanel" aria-labelledby="display-tab">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="max_featured_stories" class="form-label">Số lượng truyện nổi bật trên trang chủ</label>
+                                    <input type="number" class="form-control" id="max_featured_stories" name="max_featured_stories" value="{{ settings.max_featured_stories }}" min="1" max="20">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="max_latest_stories" class="form-label">Số lượng truyện mới cập nhật trên trang chủ</label>
+                                    <input type="number" class="form-control" id="max_latest_stories" name="max_latest_stories" value="{{ settings.max_latest_stories }}" min="1" max="30">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="max_popular_stories" class="form-label">Số lượng truyện phổ biến trên trang chủ</label>
+                                    <input type="number" class="form-control" id="max_popular_stories" name="max_popular_stories" value="{{ settings.max_popular_stories }}" min="1" max="20">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="max_completed_stories" class="form-label">Số lượng truyện đã hoàn thành trên trang chủ</label>
+                                    <input type="number" class="form-control" id="max_completed_stories" name="max_completed_stories" value="{{ settings.max_completed_stories }}" min="1" max="20">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mt-3">
+                            <div class="col-md-12">
+                                <div class="card border-info">
+                                    <div class="card-header bg-info text-white">
+                                        <h5 class="mb-0">Cài đặt hiển thị header và footer</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="mb-3">
+                                            <label for="site_header" class="form-label">Nội dung header</label>
+                                            <textarea class="form-control" id="site_header" name="site_header" rows="3">{{ settings.site_header }}</textarea>
+                                            <div class="form-text">Có thể sử dụng HTML. Sẽ được hiển thị ở phần đầu trang chủ.</div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="site_footer" class="form-label">Nội dung footer</label>
+                                            <textarea class="form-control" id="site_footer" name="site_footer" rows="3">{{ settings.site_footer }}</textarea>
+                                            <div class="form-text">Có thể sử dụng HTML. Sẽ được hiển thị ở phần chân trang.</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Templates Settings -->
+                    <div class="tab-pane fade" id="templates" role="tabpanel" aria-labelledby="templates-tab">
+                        <div class="card border-success mb-4">
+                            <div class="card-header bg-success text-white">
+                                <h5 class="mb-0">Mẫu mô tả truyện mặc định</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label for="story_title_template" class="form-label">Mẫu tiêu đề truyện</label>
+                                    <input type="text" class="form-control" id="story_title_template" name="story_title_template" value="{{ settings.story_title_template|default('[title] - [year] | [country]') }}">
+                                    <div class="form-text">Sử dụng các mã sau: [title], [year], [country], [author], [type]</div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="story_description_template" class="form-label">Mẫu mô tả truyện</label>
+                                    <textarea class="form-control" id="story_description_template" name="story_description_template" rows="4">{{ settings.story_description_template }}</textarea>
+                                    <div class="form-text">
+                                        Sử dụng các mã sau: [title], [year], [country], [author], [categories], [type].
+                                        <br>Ví dụ: "Truyện [title] [year] - [country] thuộc thể loại [categories]. Truyện do [author] đánh giá."
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card border-success">
+                            <div class="card-header bg-success text-white">
+                                <h5 class="mb-0">Mẫu mô tả chương mặc định</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label for="chapter_title_template" class="form-label">Mẫu tiêu đề chương</label>
+                                    <input type="text" class="form-control" id="chapter_title_template" name="chapter_title_template" value="{{ settings.chapter_title_template|default('Chương [number]: [title] - [story_title]') }}">
+                                    <div class="form-text">Sử dụng các mã sau: [number], [title], [story_title]</div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="chapter_description_template" class="form-label">Mẫu mô tả chương</label>
+                                    <textarea class="form-control" id="chapter_description_template" name="chapter_description_template" rows="4">{{ settings.chapter_description_template|default('Đọc chương [number]: [title] của truyện [story_title]') }}</textarea>
+                                    <div class="form-text">
+                                        Sử dụng các mã sau: [number], [title], [story_title], [story_author], [story_categories].
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Advanced Settings -->
+                    <div class="tab-pane fade" id="advanced" role="tabpanel" aria-labelledby="advanced-tab">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="register_enabled" class="form-label">Đăng Ký Tài Khoản</label>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="register_enabled" name="register_enabled" value="1" {% if settings.register_enabled == 'on' %}checked{% endif %}>
+                                        <label class="form-check-label" for="register_enabled">Cho phép đăng ký tài khoản mới</label>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="comments_enabled" class="form-label">Bình Luận</label>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="comments_enabled" name="comments_enabled" value="1" {% if settings.comments_enabled == 'on' %}checked{% endif %}>
+                                        <label class="form-check-label" for="comments_enabled">Cho phép bình luận trên toàn trang</label>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="guest_comments_enabled" class="form-label">Bình Luận của Khách</label>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="guest_comments_enabled" name="guest_comments_enabled" value="1" {% if settings.guest_comments_enabled == 'on' %}checked{% endif %}>
+                                        <label class="form-check-label" for="guest_comments_enabled">Cho phép khách bình luận (không cần đăng nhập)</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Cache</label>
+                                    <div class="d-grid gap-2">
+                                        <button type="button" class="btn btn-warning" id="clearCacheBtn">
+                                            <i class="fas fa-trash me-1"></i> Xóa bộ nhớ đệm
+                                        </button>
+                                    </div>
+                                    <div class="form-text text-light-50">Xóa bộ nhớ đệm có thể giúp khi có vấn đề về hiển thị dữ liệu</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-primary btn-lg px-5">
+                        <i class="fas fa-save me-2"></i> Lưu Cài Đặt
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+    $(document).ready(function() {
+        // Clear cache button
+        $('#clearCacheBtn').on('click', function() {
+            if (confirm('Bạn có chắc chắn muốn xóa bộ nhớ đệm không?')) {
+                $.ajax({
+                    url: '{{ base_url() }}/admin/settings/clear-cache',
+                    method: 'POST',
+                    data: {
+                        '{{ csrf_token_name }}': '{{ csrf_hash }}'
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            alert('Đã xóa bộ nhớ đệm thành công.');
+                        } else {
+                            alert('Không thể xóa bộ nhớ đệm. Vui lòng thử lại.');
+                        }
+                    },
+                    error: function() {
+                        alert('Có lỗi xảy ra khi kết nối đến máy chủ.');
+                    }
+                });
+            }
+        });
+
+        // Add rich text editor to templates
+        if (typeof ClassicEditor !== 'undefined') {
+            ClassicEditor
+                .create(document.querySelector('#story_description_template'))
+                .catch(error => {
+                    console.error(error);
+                });
+
+            ClassicEditor
+                .create(document.querySelector('#chapter_description_template'))
+                .catch(error => {
+                    console.error(error);
+                });
+        }
+    });
+</script>
+{% endblock %}

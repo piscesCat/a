@@ -1,0 +1,173 @@
+{% extends "layouts/main.html" %}
+
+{% block title %}Thể loại: {{ category.name }}{% endblock %}
+{% block meta_description %}Danh sách truyện thể loại {{ category.name }} - Đọc truyện {{ category.name }} hay online, cập nhật mới nhất{% endblock %}
+
+{% block content %}
+<!-- Category Header -->
+<div class="py-3 mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <h1 class="mb-0">
+            <i class="fas fa-tag me-2 text-primary"></i>Thể loại: {{ category.name }}
+        </h1>
+        <div class="dropdown">
+            <button class="btn btn-outline-light dropdown-toggle" type="button" id="sortDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-sort me-1"></i> Sắp xếp
+            </button>
+            <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end" aria-labelledby="sortDropdown">
+                <li><a class="dropdown-item" href="{{ base_url() }}/the-loai/{{ category.slug }}?sort=latest">Mới nhất</a></li>
+                <li><a class="dropdown-item" href="{{ base_url() }}/the-loai/{{ category.slug }}?sort=popular">Xem nhiều</a></li>
+                <li><a class="dropdown-item" href="{{ base_url() }}/the-loai/{{ category.slug }}?sort=rating">Đánh giá cao</a></li>
+                <li><a class="dropdown-item" href="{{ base_url() }}/the-loai/{{ category.slug }}?sort=completed">Hoàn thành</a></li>
+            </ul>
+        </div>
+    </div>
+    <p class="text-muted">{{ category.description }}</p>
+</div>
+
+<!-- Category Filter Tags -->
+<div class="category-filters mb-4">
+    <button class="category-filter {{ status is empty ? 'active' : '' }}" data-status="">Tất cả</button>
+    <button class="category-filter {{ status == 'ongoing' ? 'active' : '' }}" data-status="ongoing">Đang ra</button>
+    <button class="category-filter {{ status == 'completed' ? 'active' : '' }}" data-status="completed">Hoàn thành</button>
+</div>
+
+<!-- Novels List -->
+<div class="row">
+    {% if novels|length > 0 %}
+        {% for novel in novels %}
+        <div class="col-6 col-md-4 col-lg-3 mb-4">
+            <div class="novel-card">
+                <div class="card-img-container position-relative">
+                    <img src="{{ novel.cover_image }}" class="card-img-top" alt="{{ novel.title }}">
+                    <div class="card-img-overlay d-flex flex-column justify-content-between p-2">
+                        <div>
+                            {% if novel.is_hot %}
+                            <span class="badge badge-hot">Hot</span>
+                            {% endif %}
+
+                            {% if novel.is_completed %}
+                            <span class="badge badge-completed">Full</span>
+                            {% else %}
+                            <span class="badge badge-new">New</span>
+                            {% endif %}
+                        </div>
+                        <div class="text-end">
+                            <span class="badge badge-chapter">{{ novel.latest_chapter }} chương</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-2">
+                    <h6 class="card-title text-truncate">
+                        <a href="{{ base_url() }}/truyen/{{ novel.slug }}" class="text-decoration-none text-light">
+                            {{ novel.title }}
+                        </a>
+                    </h6>
+                    <div class="small text-muted text-truncate mb-2">
+                        <i class="fas fa-user-edit me-1"></i>{{ novel.author_name }}
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted"><i class="fas fa-eye"></i> {{ novel.views|format_number }}</small>
+                        <small class="text-warning">
+                            <i class="fas fa-star"></i> {{ novel.rating|number_format(1) }}
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="col-12">
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i>Không tìm thấy truyện nào thuộc thể loại này.
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Pagination -->
+{% if total_pages > 1 %}
+<div class="pagination-container mt-4" data-total-pages="{{ total_pages }}">
+    <nav aria-label="Phân trang">
+        <ul class="pagination justify-content-center">
+            <li class="page-item {{ current_page <= 1 ? 'disabled' : '' }}">
+                <a class="page-link" href="{{ base_url() }}/the-loai/{{ category.slug }}?page={{ current_page - 1 }}{{ sort ? '&sort=' ~ sort : '' }}{{ status ? '&status=' ~ status : '' }}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+
+            {% for i in 1..total_pages %}
+                {% if i == 1 or i == total_pages or i >= current_page - 2 and i <= current_page + 2 %}
+                    <li class="page-item {{ i == current_page ? 'active' : '' }}">
+                        <a class="page-link" href="{{ base_url() }}/the-loai/{{ category.slug }}?page={{ i }}{{ sort ? '&sort=' ~ sort : '' }}{{ status ? '&status=' ~ status : '' }}">{{ i }}</a>
+                    </li>
+                {% elseif i == 2 or i == total_pages - 1 %}
+                    <li class="page-item disabled">
+                        <span class="page-link">...</span>
+                    </li>
+                {% endif %}
+            {% endfor %}
+
+            <li class="page-item {{ current_page >= total_pages ? 'disabled' : '' }}">
+                <a class="page-link" href="{{ base_url() }}/the-loai/{{ category.slug }}?page={{ current_page + 1 }}{{ sort ? '&sort=' ~ sort : '' }}{{ status ? '&status=' ~ status : '' }}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</div>
+{% endif %}
+
+<!-- Similar Categories -->
+<div class="section mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="section-title">
+            <i class="fas fa-tags text-info me-2"></i>Thể Loại Tương Tự
+        </h2>
+    </div>
+
+    <div class="row">
+        {% for related_category in related_categories %}
+        <div class="col-6 col-md-4 col-lg-3 mb-3">
+            <a href="{{ base_url() }}/the-loai/{{ related_category.slug }}" class="card bg-dark h-100 text-decoration-none">
+                <div class="card-body">
+                    <h5 class="card-title text-light">{{ related_category.name }}</h5>
+                    <p class="card-text text-muted small">{{ related_category.description|limit_text(60) }}</p>
+                    <div class="d-flex justify-content-between align-items-center mt-2">
+                        <span class="badge bg-primary rounded-pill">{{ related_category.novel_count }} truyện</span>
+                        <i class="fas fa-angle-right text-light"></i>
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Status filter buttons
+    const filterButtons = document.querySelectorAll('.category-filter');
+
+    filterButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const status = this.dataset.status;
+            let url = new URL(window.location.href);
+
+            if (status) {
+                url.searchParams.set('status', status);
+            } else {
+                url.searchParams.delete('status');
+            }
+
+            // Reset to page 1 when changing filters
+            url.searchParams.set('page', 1);
+
+            window.location.href = url.toString();
+        });
+    });
+});
+</script>
+{% endblock %}

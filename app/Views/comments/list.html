@@ -1,0 +1,74 @@
+<div class="comments-container">
+    <h4 class="comments-title mb-3">
+        <i class="fas fa-comments"></i> Bình luận ({{ total_comments }})
+    </h4>
+
+    <div class="comments-list">
+        {% if comments|length > 0 %}
+            {% for comment in comments %}
+                {% include 'comments/comment_item.html' %}
+            {% endfor %}
+
+            {% if has_more %}
+            <div class="text-center mt-3 mb-3">
+                <button id="loadMoreComments" class="btn btn-outline-primary"
+                        data-story="{{ story_id }}"
+                        {% if chapter_id %}data-chapter="{{ chapter_id }}"{% endif %}
+                        data-offset="{{ comments|length }}">
+                    <i class="fas fa-sync"></i> Xem thêm bình luận
+                </button>
+            </div>
+            {% endif %}
+        {% else %}
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle"></i> Chưa có bình luận nào. Hãy là người đầu tiên bình luận!
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        $('#loadMoreComments').click(function() {
+            const btn = $(this);
+            const storyId = btn.data('story');
+            const chapterId = btn.data('chapter') || '';
+            const offset = btn.data('offset');
+
+            btn.html('<i class="fas fa-spinner fa-spin"></i> Đang tải...').prop('disabled', true);
+
+            $.ajax({
+                url: '{{ site_url("comments/load-more") }}',
+                type: 'GET',
+                data: {
+                    story_id: storyId,
+                    chapter_id: chapterId,
+                    offset: offset
+                },
+                dataType: 'json',
+                success: function(response) {
+                    if (response.status === 'success') {
+                        // Thêm bình luận vào danh sách
+                        $('.comments-list').append(response.html);
+
+                        // Cập nhật offset cho lần tải tiếp theo
+                        btn.data('offset', offset + 10);
+
+                        // Ẩn nút nếu không còn bình luận
+                        if (!response.hasMore) {
+                            btn.parent().hide();
+                        }
+                    } else {
+                        alert(response.message);
+                    }
+
+                    btn.html('<i class="fas fa-sync"></i> Xem thêm bình luận').prop('disabled', false);
+                },
+                error: function() {
+                    alert('Đã xảy ra lỗi khi tải thêm bình luận.');
+                    btn.html('<i class="fas fa-sync"></i> Xem thêm bình luận').prop('disabled', false);
+                }
+            });
+        });
+    });
+</script>

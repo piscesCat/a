@@ -1,0 +1,285 @@
+{% extends "layouts/admin.html" %}
+
+{% block title %}Bảng Điều Khiển{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3">Bảng Điều Khiển</h1>
+        <div>
+            <a href="{{ base_url() }}/admin/stories/new" class="btn btn-primary">
+                <i class="fas fa-plus-circle"></i> Thêm Truyện Mới
+            </a>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-dark text-light border-primary mb-3">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title">Tổng Truyện</h6>
+                        <h2 class="mb-0">{{ stats.total_stories }}</h2>
+                    </div>
+                    <div class="fs-1 text-primary">
+                        <i class="fas fa-book"></i>
+                    </div>
+                </div>
+                <div class="card-footer bg-primary">
+                    <a href="{{ base_url() }}/admin/stories" class="text-white text-decoration-none">Xem chi tiết <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-dark text-light border-success mb-3">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title">Tổng Chương</h6>
+                        <h2 class="mb-0">{{ stats.total_chapters }}</h2>
+                    </div>
+                    <div class="fs-1 text-success">
+                        <i class="fas fa-list-ul"></i>
+                    </div>
+                </div>
+                <div class="card-footer bg-success">
+                    <a href="{{ base_url() }}/admin/chapters" class="text-white text-decoration-none">Xem chi tiết <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-dark text-light border-info mb-3">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title">Tổng Người Dùng</h6>
+                        <h2 class="mb-0">{{ stats.total_users }}</h2>
+                    </div>
+                    <div class="fs-1 text-info">
+                        <i class="fas fa-users"></i>
+                    </div>
+                </div>
+                <div class="card-footer bg-info">
+                    <a href="{{ base_url() }}/admin/users" class="text-white text-decoration-none">Xem chi tiết <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-dark text-light border-warning mb-3">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title">Tổng Lượt Xem</h6>
+                        <h2 class="mb-0">{{ stats.total_views|format_number }}</h2>
+                    </div>
+                    <div class="fs-1 text-warning">
+                        <i class="fas fa-eye"></i>
+                    </div>
+                </div>
+                <div class="card-footer bg-warning">
+                    <a href="{{ base_url() }}/admin/reports" class="text-dark text-decoration-none">Xem báo cáo <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activities and Latest Stories -->
+    <div class="row">
+        <!-- Recent Activities -->
+        <div class="col-md-6">
+            <div class="card bg-dark text-light mb-4">
+                <div class="card-header bg-dark border-bottom border-secondary">
+                    <h5 class="mb-0">Hoạt Động Gần Đây</h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_activities|length > 0 %}
+                    <ul class="list-group list-group-flush bg-dark">
+                        {% for activity in recent_activities %}
+                        <li class="list-group-item bg-dark text-light border-secondary">
+                            <div class="d-flex align-items-center">
+                                <div class="me-3">
+                                    <img src="{{ activity.user_avatar|default(base_url() ~ '/assets/images/default-avatar.png') }}" class="rounded-circle" width="40" height="40" alt="{{ activity.username }}">
+                                </div>
+                                <div>
+                                    <p class="mb-0">
+                                        <strong>{{ activity.username }}</strong> {{ activity.action }}
+                                        {% if activity.target_type == 'story' %}
+                                        <a href="{{ base_url() }}/story/{{ activity.target_slug }}">{{ activity.target_title }}</a>
+                                        {% elseif activity.target_type == 'chapter' %}
+                                        <a href="{{ base_url() }}/chapter/{{ activity.story_slug }}/{{ activity.chapter_number }}">{{ activity.target_title }}</a>
+                                        {% endif %}
+                                    </p>
+                                    <small class="text-muted">{{ activity.created_at|time_ago }}</small>
+                                </div>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <p class="text-center mb-0">Không có hoạt động nào gần đây.</p>
+                    {% endif %}
+                </div>
+                <div class="card-footer border-top border-secondary">
+                    <a href="{{ base_url() }}/admin/activities" class="text-light text-decoration-none">Xem tất cả hoạt động <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Latest Stories -->
+        <div class="col-md-6">
+            <div class="card bg-dark text-light mb-4">
+                <div class="card-header bg-dark border-bottom border-secondary">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Truyện Mới Nhất</h5>
+                        <a href="{{ base_url() }}/admin/stories/new" class="btn btn-sm btn-primary">
+                            <i class="fas fa-plus-circle"></i> Thêm mới
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    {% if recent_stories|length > 0 %}
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover">
+                            <thead>
+                                <tr>
+                                    <th style="width: 60px">Ảnh</th>
+                                    <th>Tiêu đề</th>
+                                    <th>Tác giả</th>
+                                    <th>Trạng thái</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for story in recent_stories %}
+                                <tr data-story-id="{{ story.id }}">
+                                    <td>
+                                        <img src="{{ story.cover_image }}" class="img-fluid rounded" alt="{{ story.title }}" style="width: 40px; height: 60px; object-fit: cover;">
+                                    </td>
+                                    <td>
+                                        <a href="{{ base_url() }}/story/{{ story.slug }}" class="text-light">{{ story.title }}</a>
+                                        <div>
+                                            <small class="text-muted">
+                                                <i class="fas fa-eye"></i> {{ story.views }}
+                                                <i class="fas fa-star text-warning ms-2"></i> {{ story.rating }}
+                                            </small>
+                                        </div>
+                                    </td>
+                                    <td>{{ story.author_name }}</td>
+                                    <td>
+                                        {% if story.status == 'published' %}
+                                        <span class="badge bg-success">Đã xuất bản</span>
+                                        {% elseif story.status == 'draft' %}
+                                        <span class="badge bg-secondary">Bản nháp</span>
+                                        {% elseif story.status == 'completed' %}
+                                        <span class="badge bg-primary">Hoàn thành</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="{{ base_url() }}/admin/stories/edit/{{ story.id }}" class="btn btn-info">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a href="{{ base_url() }}/admin/chapters/story/{{ story.id }}" class="btn btn-success">
+                                                <i class="fas fa-list"></i>
+                                            </a>
+                                            <button type="button" class="btn btn-danger btn-delete-story" data-id="{{ story.id }}" data-title="{{ story.title }}">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-center mb-0">Chưa có truyện nào được thêm.</p>
+                    {% endif %}
+                </div>
+                <div class="card-footer border-top border-secondary">
+                    <a href="{{ base_url() }}/admin/stories" class="text-light text-decoration-none">Xem tất cả truyện <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- System Info and Quick Links -->
+    <div class="row">
+        <!-- System Info -->
+        <div class="col-md-6">
+            <div class="card bg-dark text-light mb-4">
+                <div class="card-header bg-dark border-bottom border-secondary">
+                    <h5 class="mb-0">Thông Tin Hệ Thống</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush bg-dark">
+                        <li class="list-group-item bg-dark text-light d-flex justify-content-between border-secondary">
+                            <span>PHP Version</span>
+                            <span>{{ system_info.php_version }}</span>
+                        </li>
+                        <li class="list-group-item bg-dark text-light d-flex justify-content-between border-secondary">
+                            <span>CodeIgniter Version</span>
+                            <span>{{ system_info.ci_version }}</span>
+                        </li>
+                        <li class="list-group-item bg-dark text-light d-flex justify-content-between border-secondary">
+                            <span>Máy chủ</span>
+                            <span>{{ system_info.server }}</span>
+                        </li>
+                        <li class="list-group-item bg-dark text-light d-flex justify-content-between border-secondary">
+                            <span>Múi giờ</span>
+                            <span>{{ system_info.timezone }}</span>
+                        </li>
+                        <li class="list-group-item bg-dark text-light d-flex justify-content-between border-secondary">
+                            <span>Thời gian khởi chạy</span>
+                            <span>{{ system_info.uptime }}</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="col-md-6">
+            <div class="card bg-dark text-light mb-4">
+                <div class="card-header bg-dark border-bottom border-secondary">
+                    <h5 class="mb-0">Truy cập nhanh</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <a href="{{ base_url() }}/admin/stories/new" class="card text-white bg-primary h-100 text-center p-3 text-decoration-none">
+                                <div class="card-body">
+                                    <i class="fas fa-book fa-3x mb-3"></i>
+                                    <h5>Thêm Truyện</h5>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-6">
+                            <a href="{{ base_url() }}/admin/chapters/new" class="card text-white bg-success h-100 text-center p-3 text-decoration-none">
+                                <div class="card-body">
+                                    <i class="fas fa-list-alt fa-3x mb-3"></i>
+                                    <h5>Thêm Chương</h5>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-6">
+                            <a href="{{ base_url() }}/admin/categories" class="card text-white bg-info h-100 text-center p-3 text-decoration-none">
+                                <div class="card-body">
+                                    <i class="fas fa-tags fa-3x mb-3"></i>
+                                    <h5>Quản lý Thể loại</h5>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-6">
+                            <a href="{{ base_url() }}/admin/users" class="card text-white bg-warning h-100 text-center p-3 text-decoration-none">
+                                <div class="card-body">
+                                    <i class="fas fa-users fa-3x mb-3"></i>
+                                    <h5>Quản lý Người dùng</h5>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

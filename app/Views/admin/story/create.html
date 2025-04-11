@@ -1,0 +1,234 @@
+{% extends "layouts/admin.html" %}
+
+{% block title %}Thêm Truyện Mới{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3">Thêm Truyện Mới</h1>
+        <div>
+            <a href="{{ base_url() }}/admin/stories" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Quay lại
+            </a>
+        </div>
+    </div>
+
+    <!-- Error messages -->
+    {% if session.getFlashdata('errors') %}
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <h5><i class="fas fa-exclamation-triangle me-2"></i>Vui lòng sửa các lỗi sau:</h5>
+        <ul class="mb-0">
+            {% for key, error in session.getFlashdata('errors') %}
+            <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endif %}
+
+    <!-- Create Story Form -->
+    <div class="card bg-dark">
+        <div class="card-body">
+            <form action="{{ base_url() }}/admin/stories/create" method="post" enctype="multipart/form-data" class="admin-form">
+                {{ csrf_field() }}
+
+                <div class="row">
+                    <!-- Left Column - Basic Info -->
+                    <div class="col-md-8">
+                        <fieldset>
+                            <legend>Thông tin cơ bản</legend>
+
+                            <div class="mb-3">
+                                <label for="title" class="form-label">Tiêu đề <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="title" name="title" value="{{ old('title') }}" required>
+                                <div class="form-text text-light-50">Tiêu đề của truyện, ít nhất 3 ký tự</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="slug" class="form-label">Đường dẫn <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="slug" name="slug" value="{{ old('slug') }}" required>
+                                <div class="form-text text-light-50">Đường dẫn URL của truyện, chỉ chứa chữ cái, số và dấu gạch ngang</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="description" class="form-label">Mô tả <span class="text-danger">*</span></label>
+                                <textarea class="form-control summernote" id="description" name="description" rows="6" required>{{ old('description') }}</textarea>
+                                <div class="form-text text-light-50">Giới thiệu ngắn gọn về nội dung của truyện</div>
+                            </div>
+                        </fieldset>
+
+                        <fieldset class="mt-4">
+                            <legend>Thông tin chi tiết</legend>
+
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="type" class="form-label">Loại truyện</label>
+                                        <select class="form-select" id="type" name="type">
+                                            <option value="">-- Chọn loại --</option>
+                                            <option value="single" {% if old('type') == 'single' %}selected{% endif %}>Phim lẻ</option>
+                                            <option value="series" {% if old('type') == 'series' %}selected{% endif %}>Phim bộ</option>
+                                            <option value="review" {% if old('type') == 'review' %}selected{% endif %}>Review</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="country_id" class="form-label">Quốc gia</label>
+                                        <select class="form-select" id="country_id" name="country_id">
+                                            <option value="">-- Chọn quốc gia --</option>
+                                            {% for country in countries %}
+                                            <option value="{{ country.id }}" {% if country.id == old('country_id') %}selected{% endif %}>
+                                                {{ country.name }}
+                                            </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="year" class="form-label">Năm phát hành</label>
+                                        <input type="number" class="form-control" id="year" name="year" value="{{ old('year') }}" min="1900" max="2099">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="checkbox" id="is_featured" name="is_featured" value="1" {% if old('is_featured') %}checked{% endif %}>
+                                        <label class="form-check-label" for="is_featured">
+                                            Nổi bật
+                                        </label>
+                                        <div class="form-text text-light-50">Hiển thị trong mục nổi bật</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="checkbox" id="is_hot" name="is_hot" value="1" {% if old('is_hot') %}checked{% endif %}>
+                                        <label class="form-check-label" for="is_hot">
+                                            Hot
+                                        </label>
+                                        <div class="form-text text-light-50">Đánh dấu là phim HOT</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="checkbox" id="is_completed" name="is_completed" value="1" {% if old('is_completed') %}checked{% endif %}>
+                                        <label class="form-check-label" for="is_completed">
+                                            Hoàn thành
+                                        </label>
+                                        <div class="form-text text-light-50">Truyện đã hoàn thành</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+
+                    <!-- Right Column - Meta Info & Image -->
+                    <div class="col-md-4">
+                        <fieldset>
+                            <legend>Thông tin khác</legend>
+
+                            <div class="mb-3">
+                                <label for="author_id" class="form-label">Tác giả <span class="text-danger">*</span></label>
+                                <select class="form-select" id="author_id" name="author_id" required>
+                                    {% for user in users %}
+                                    <option value="{{ user.id }}" {% if user.id == old('author_id') %}selected{% endif %}>
+                                        {{ user.username }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="status" class="form-label">Trạng thái <span class="text-danger">*</span></label>
+                                <select class="form-select" id="status" name="status" required>
+                                    <option value="published" {% if old('status') == 'published' %}selected{% endif %}>Đã xuất bản</option>
+                                    <option value="draft" {% if old('status') == 'draft' %}selected{% endif %}>Bản nháp</option>
+                                    <option value="completed" {% if old('status') == 'completed' %}selected{% endif %}>Hoàn thành</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="categories" class="form-label">Thể loại <span class="text-danger">*</span></label>
+                                <select class="form-select" id="categories" name="categories[]" multiple required>
+                                    {% for category in categories %}
+                                    <option value="{{ category.id }}" {% if category.id in old('categories', []) %}selected{% endif %}>
+                                        {{ category.name }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                                <div class="form-text text-light-50">Giữ Ctrl để chọn nhiều thể loại</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="cover_image" class="form-label">Ảnh bìa</label>
+                                <input type="file" class="form-control image-upload" id="cover_image" name="cover_image" accept="image/*" data-preview="coverPreview">
+                                <div class="form-text text-light-50">Kích thước đề xuất: 300x450 pixel</div>
+                                <div class="mt-2">
+                                    <img id="coverPreview" src="#" alt="Ảnh bìa truyện" class="form-image-preview d-none">
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+                </div>
+
+                <div class="mt-4 text-center">
+                    <button type="submit" class="btn btn-primary btn-lg px-5">
+                        <i class="fas fa-save me-2"></i> Lưu truyện
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+    $(document).ready(function() {
+        // Auto-generate slug from title
+        $('#title').on('blur', function() {
+            const titleValue = $(this).val();
+            if (titleValue && $('#slug').val() === '') {
+                // Chuyển đổi tiêu đề thành slug
+                let slug = titleValue
+                    .toLowerCase()
+                    .replace(/đ/g, 'd')
+                    .replace(/[^\w\s-]/g, '')
+                    .replace(/[\s_-]+/g, '-')
+                    .replace(/^-+|-+$/g, '');
+
+                $('#slug').val(slug);
+            }
+        });
+
+        // Initialize select2 for categories and countries
+        if ($.fn.select2) {
+            $('#categories').select2({
+                theme: 'bootstrap-5',
+                placeholder: 'Chọn thể loại...',
+                closeOnSelect: false
+            });
+
+            $('#country_id').select2({
+                theme: 'bootstrap-5',
+                placeholder: 'Chọn quốc gia...'
+            });
+        }
+
+        // Preview image when selected
+        $('#cover_image').change(function() {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    $('#coverPreview').attr('src', e.target.result).removeClass('d-none');
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+    });
+</script>
+{% endblock %}

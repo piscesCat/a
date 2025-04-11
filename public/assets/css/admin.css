@@ -1,0 +1,412 @@
+/**
+ * Admin styling - Optimized CSS for admin panel
+ */
+
+/* Admin Layout */
+.admin-body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Sidebar */
+.admin-sidebar {
+    position: fixed;
+    top: 56px;
+    bottom: 0;
+    left: 0;
+    z-index: 100;
+    padding: 0;
+    box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+    height: calc(100vh - 56px);
+    overflow-y: auto;
+}
+
+.admin-sidebar .nav-link {
+    font-weight: 500;
+    color: rgba(255, 255, 255, .75);
+    padding: 0.75rem 1rem;
+    border-left: 3px solid transparent;
+    transition: all 0.2s ease-in-out;
+}
+
+.admin-sidebar .nav-link:hover {
+    color: rgba(255, 255, 255, 1);
+    background-color: rgba(255, 255, 255, .05);
+    border-left-color: rgba(255, 255, 255, .5);
+}
+
+.admin-sidebar .nav-link.active {
+    color: #0d6efd;
+    border-left-color: #0d6efd;
+    background-color: rgba(13, 110, 253, .05);
+}
+
+.admin-sidebar .nav-link i {
+    margin-right: 0.5rem;
+    width: 20px;
+    text-align: center;
+}
+
+.admin-content {
+    margin-top: 56px;
+    /* Add space for the fixed navbar */
+    padding-bottom: 2rem;
+    flex: 1;
+}
+
+/* Dashboard Cards */
+.stat-card {
+    border-radius: 0.5rem;
+    overflow: hidden;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.stat-card .card-body {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.stat-card .stat-icon {
+    font-size: 2.5rem;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    color: #fff;
+}
+
+.stat-card .stat-details h3 {
+    margin-bottom: 0;
+    font-size: 1.75rem;
+    font-weight: bold;
+}
+
+.stat-card .stat-details p {
+    margin-bottom: 0;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* Activity List */
+.activity-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.activity-item {
+    display: flex;
+    align-items: flex-start;
+    padding: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    transition: background-color 0.2s ease;
+}
+
+.activity-item:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.activity-item:last-child {
+    border-bottom: none;
+}
+
+.activity-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+}
+
+.activity-content {
+    flex: 1;
+}
+
+.activity-title {
+    margin-bottom: 0.25rem;
+    font-weight: 500;
+}
+
+.activity-meta {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* Forms */
+.admin-form .form-control,
+.admin-form .form-select {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #fff;
+}
+
+.admin-form .form-control:focus,
+.admin-form .form-select:focus {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(13, 110, 253, 0.5);
+    color: #fff;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.admin-form .form-label {
+    font-weight: 500;
+}
+
+.admin-form .form-text {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* Image preview */
+.form-image-preview {
+    max-width: 100%;
+    max-height: 150px;
+    border-radius: 0.25rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    margin-top: 0.5rem;
+}
+
+/* DataTables customization */
+.dataTables_wrapper .dataTables_length,
+.dataTables_wrapper .dataTables_filter,
+.dataTables_wrapper .dataTables_info,
+.dataTables_wrapper .dataTables_processing,
+.dataTables_wrapper .dataTables_paginate {
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.dataTables_wrapper .dataTables_length select,
+.dataTables_wrapper .dataTables_filter input {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    color: #fff !important;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.current,
+.dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+    background-color: #0d6efd !important;
+    border-color: #0d6efd !important;
+    color: #fff !important;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    color: #fff !important;
+}
+
+/* Quick links cards on dashboard */
+.quick-link-card {
+    border-radius: 0.5rem;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.quick-link-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+/* Summernote in dark mode */
+.note-editor .note-toolbar,
+.note-editor .note-status-output,
+.note-editor .note-statusbar {
+    background-color: #2d2d2d !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.note-editor .note-editable {
+    background-color: #222 !important;
+    color: #fff !important;
+}
+
+.note-editor .note-toolbar .note-btn {
+    background-color: #2d2d2d !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    color: #fff !important;
+}
+
+.note-editor .note-toolbar .note-btn:hover {
+    background-color: #444 !important;
+}
+
+/* Media browser */
+.media-browser {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1rem;
+}
+
+.media-item {
+    position: relative;
+    border-radius: 0.25rem;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.2s ease;
+}
+
+.media-item:hover {
+    transform: scale(1.05);
+    border-color: rgba(13, 110, 253, 0.5);
+}
+
+.media-item img {
+    width: 100%;
+    height: 100px;
+    object-fit: cover;
+}
+
+.media-item .media-info {
+    background-color: rgba(0, 0, 0, 0.7);
+    color: #fff;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.media-item .media-actions {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 0.25rem;
+    display: flex;
+    gap: 0.25rem;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.media-item:hover .media-actions {
+    opacity: 1;
+}
+
+.media-item .btn-media-action {
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 0.75rem;
+}
+
+/* File upload zone */
+.upload-zone {
+    border: 2px dashed rgba(255, 255, 255, 0.2);
+    border-radius: 0.5rem;
+    padding: 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.upload-zone:hover,
+.upload-zone.dragover {
+    border-color: #0d6efd;
+    background-color: rgba(13, 110, 253, 0.05);
+}
+
+.upload-zone .upload-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* Status toggles */
+.status-toggle-wrapper {
+    display: inline-block;
+}
+
+.status-toggle-wrapper .form-check-input {
+    width: 3rem;
+    height: 1.5rem;
+}
+
+/* Responsive fixes */
+@media (max-width: 767.98px) {
+    .admin-sidebar {
+        position: static;
+        height: auto;
+        width: 100%;
+    }
+
+    .admin-content {
+        margin-left: 0;
+    }
+
+    .stat-card .stat-icon {
+        font-size: 1.75rem;
+        width: 45px;
+        height: 45px;
+    }
+
+    .stat-card .stat-details h3 {
+        font-size: 1.25rem;
+    }
+
+    .media-browser {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Utility classes */
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.min-w-150px {
+    min-width: 150px;
+}
+
+.min-w-100px {
+    min-width: 100px;
+}
+
+.mw-50 {
+    max-width: 50%;
+}
+
+.mw-75 {
+    max-width: 75%;
+}
+
+/* Nav tabs styling */
+.nav-tabs .nav-link {
+    color: rgba(255, 255, 255, 0.7);
+    border-color: transparent;
+}
+
+.nav-tabs .nav-link:hover {
+    color: #fff;
+    border-color: transparent;
+    border-bottom-color: rgba(255, 255, 255, 0.3);
+}
+
+.nav-tabs .nav-link.active {
+    color: #0d6efd;
+    background-color: transparent;
+    border-color: transparent;
+    border-bottom: 2px solid #0d6efd;
+}

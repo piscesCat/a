@@ -1,0 +1,276 @@
+{% extends "layouts/main.html" %}
+
+{% block title %}{{ chapter.title }} - {{ novel.title }}{% endblock %}
+{% block meta_description %}Đọc chương {{ chapter.chapter_number }}: {{ chapter.title }} của truyện {{ novel.title }}{% endblock %}
+
+{% block banner %}{% endblock %}
+
+{% block content %}
+<!-- Reading Settings Bar -->
+<div class="bg-dark p-3 mb-3 rounded reading-settings-bar">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <button id="reading-settings-toggle" class="btn btn-sm btn-outline-light">
+                <i class="fas fa-cog me-1"></i> Cài đặt đọc
+            </button>
+
+            <div id="reading-settings-panel" class="reading-settings mt-3" style="display: none;">
+                <div class="card bg-dark border border-secondary">
+                    <div class="card-body">
+                        <h6 class="mb-3">Kích thước chữ</h6>
+                        <div class="btn-group mb-3" role="group">
+                            <button id="font-size-small" class="btn btn-outline-light">Nhỏ</button>
+                            <button id="font-size-medium" class="btn btn-outline-light">Vừa</button>
+                            <button id="font-size-large" class="btn btn-outline-light">Lớn</button>
+                        </div>
+
+                        <h6 class="mb-3">Chế độ đọc</h6>
+                        <div class="btn-group" role="group">
+                            <button id="theme-dark" class="btn btn-outline-light">Tối</button>
+                            <button id="theme-light" class="btn btn-outline-light">Sáng</button>
+                            <button id="theme-sepia" class="btn btn-outline-light">Sepia</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex">
+            <button id="add-bookmark" class="btn btn-sm btn-outline-warning me-2" data-bs-toggle="tooltip" title="Đánh dấu chương này">
+                <i class="fas fa-bookmark"></i>
+            </button>
+
+            <button id="report-error" class="btn btn-sm btn-outline-danger" data-bs-toggle="tooltip" title="Báo lỗi">
+                <i class="fas fa-exclamation-triangle"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Chapter Content -->
+<div class="chapter-container">
+    <div class="chapter-heading text-center mb-4">
+        <a href="{{ base_url() }}/truyen/{{ novel.slug }}" class="text-light text-decoration-none novel-title mb-2 d-block">{{ novel.title }}</a>
+        <h1>Chương {{ chapter.chapter_number }}: {{ chapter.title }}</h1>
+    </div>
+
+    <!-- Chapter Navigation Top -->
+    <div class="chapter-navigation mb-4">
+        {% if prev_chapter %}
+        <a href="{{ base_url() }}/truyen/{{ novel.slug }}/chuong-{{ prev_chapter.chapter_number }}" class="btn btn-outline-primary prev-chapter">
+            <i class="fas fa-chevron-left me-1"></i> Chương trước
+        </a>
+        {% else %}
+        <button class="btn btn-outline-secondary" disabled>
+            <i class="fas fa-chevron-left me-1"></i> Chương trước
+        </button>
+        {% endif %}
+
+        <a href="{{ base_url() }}/truyen/{{ novel.slug }}" class="btn btn-outline-secondary back-to-novel">
+            <i class="fas fa-list me-1"></i> Danh sách chương
+        </a>
+
+        {% if next_chapter %}
+        <a href="{{ base_url() }}/truyen/{{ novel.slug }}/chuong-{{ next_chapter.chapter_number }}" class="btn btn-outline-primary next-chapter">
+            Chương sau <i class="fas fa-chevron-right ms-1"></i>
+        </a>
+        {% else %}
+        <button class="btn btn-outline-secondary" disabled>
+            Chương sau <i class="fas fa-chevron-right ms-1"></i>
+        </button>
+        {% endif %}
+    </div>
+
+    <!-- Chapter Content -->
+    <div class="chapter-content">
+        {{ chapter.content|nl2br }}
+    </div>
+
+    <!-- Chapter Navigation Bottom -->
+    <div class="chapter-navigation mt-4">
+        {% if prev_chapter %}
+        <a href="{{ base_url() }}/truyen/{{ novel.slug }}/chuong-{{ prev_chapter.chapter_number }}" class="btn btn-outline-primary prev-chapter">
+            <i class="fas fa-chevron-left me-1"></i> Chương trước
+        </a>
+        {% else %}
+        <button class="btn btn-outline-secondary" disabled>
+            <i class="fas fa-chevron-left me-1"></i> Chương trước
+        </button>
+        {% endif %}
+
+        <a href="{{ base_url() }}/truyen/{{ novel.slug }}" class="btn btn-outline-secondary back-to-novel">
+            <i class="fas fa-list me-1"></i> Danh sách chương
+        </a>
+
+        {% if next_chapter %}
+        <a href="{{ base_url() }}/truyen/{{ novel.slug }}/chuong-{{ next_chapter.chapter_number }}" class="btn btn-outline-primary next-chapter">
+            Chương sau <i class="fas fa-chevron-right ms-1"></i>
+        </a>
+        {% else %}
+        <button class="btn btn-outline-secondary" disabled>
+            Chương sau <i class="fas fa-chevron-right ms-1"></i>
+        </button>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Chapter Comments -->
+<div class="card bg-dark mt-4">
+    <div class="card-header">
+        <h5 class="mb-0"><i class="fas fa-comments me-2"></i>Bình luận</h5>
+    </div>
+    <div class="card-body">
+        <!-- Comment Form -->
+        {% include 'comments/comment_form.html' with {
+            'action_url': base_url() ~ '/comments/chapter',
+            'story_id': novel.id,
+            'chapter_id': chapter.id
+        } %}
+
+        <!-- Comments List -->
+        {% include 'comments/list.html' with {
+            'comments': comments,
+            'total_comments': total_comments,
+            'story_id': novel.id,
+            'chapter_id': chapter.id,
+            'has_more': total_comments > comments|length
+        } %}
+    </div>
+</div>
+
+<!-- Report Error Modal -->
+<div class="modal fade" id="reportErrorModal" tabindex="-1" aria-labelledby="reportErrorModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark text-light">
+            <div class="modal-header">
+                <h5 class="modal-title" id="reportErrorModalLabel">Báo lỗi chương</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="reportErrorForm">
+                    <input type="hidden" name="novel_id" value="{{ novel.id }}">
+                    <input type="hidden" name="chapter_id" value="{{ chapter.id }}">
+
+                    <div class="mb-3">
+                        <label for="errorType" class="form-label">Loại lỗi</label>
+                        <select class="form-select bg-dark text-light" id="errorType" name="error_type">
+                            <option value="typo">Lỗi chính tả</option>
+                            <option value="missing">Thiếu nội dung</option>
+                            <option value="wrong_order">Sai thứ tự chương</option>
+                            <option value="other">Lỗi khác</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="errorDetail" class="form-label">Chi tiết lỗi</label>
+                        <textarea class="form-control bg-dark text-light" id="errorDetail" name="error_detail" rows="3" placeholder="Mô tả chi tiết lỗi bạn gặp phải..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-primary" id="submitErrorReport">Báo lỗi</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Reading settings toggle
+    const settingsToggle = document.getElementById('reading-settings-toggle');
+    const settingsPanel = document.getElementById('reading-settings-panel');
+
+    if (settingsToggle && settingsPanel) {
+        settingsToggle.addEventListener('click', function() {
+            if (settingsPanel.style.display === 'none') {
+                settingsPanel.style.display = 'block';
+            } else {
+                settingsPanel.style.display = 'none';
+            }
+        });
+    }
+
+    // Report error button
+    const reportErrorBtn = document.getElementById('report-error');
+    const reportErrorModal = new bootstrap.Modal(document.getElementById('reportErrorModal'));
+
+    if (reportErrorBtn) {
+        reportErrorBtn.addEventListener('click', function() {
+            reportErrorModal.show();
+        });
+    }
+
+    // Submit error report
+    const submitErrorReport = document.getElementById('submitErrorReport');
+    const reportErrorForm = document.getElementById('reportErrorForm');
+
+    if (submitErrorReport && reportErrorForm) {
+        submitErrorReport.addEventListener('click', function() {
+            const formData = new FormData(reportErrorForm);
+
+            fetch(`${baseUrl}/api/report-error`, {
+                method: 'POST',
+                body: new URLSearchParams(formData),
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    reportErrorModal.hide();
+                    alert('Cảm ơn bạn đã báo cáo lỗi. Chúng tôi sẽ xem xét sớm nhất có thể.');
+                    reportErrorForm.reset();
+                } else {
+                    alert('Có lỗi xảy ra khi gửi báo cáo. Vui lòng thử lại sau.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Có lỗi xảy ra khi gửi báo cáo. Vui lòng thử lại sau.');
+            });
+        });
+    }
+
+    // Add bookmark
+    const addBookmarkBtn = document.getElementById('add-bookmark');
+
+    if (addBookmarkBtn) {
+        addBookmarkBtn.addEventListener('click', function() {
+            if (!userId) {
+                window.location.href = `${baseUrl}/dang-nhap?redirect=${encodeURIComponent(window.location.href)}`;
+                return;
+            }
+
+            fetch(`${baseUrl}/api/bookmark-chapter`, {
+                method: 'POST',
+                body: JSON.stringify({
+                    novel_id: {{ novel.id }},
+                    chapter_id: {{ chapter.id }}
+                }),
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Đã đánh dấu chương này thành công.');
+                    addBookmarkBtn.classList.remove('btn-outline-warning');
+                    addBookmarkBtn.classList.add('btn-warning');
+                } else {
+                    alert('Có lỗi xảy ra khi đánh dấu chương này. Vui lòng thử lại sau.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Có lỗi xảy ra khi đánh dấu chương này. Vui lòng thử lại sau.');
+            });
+        });
+    }
+});
+</script>
+{% endblock %}

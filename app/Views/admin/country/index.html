@@ -1,0 +1,115 @@
+{% extends 'layouts/admin.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Quản lý quốc gia</h1>
+        <a href="{{ site_url('admin/countries/create') }}" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
+            <i class="fas fa-plus fa-sm text-white-50"></i> Thêm quốc gia mới
+        </a>
+    </div>
+
+    {% if session().has('success') %}
+    <div class="alert alert-success">
+        {{ session('success') }}
+    </div>
+    {% endif %}
+
+    {% if session().has('error') %}
+    <div class="alert alert-danger">
+        {{ session('error') }}
+    </div>
+    {% endif %}
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Danh sách quốc gia</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Tên</th>
+                            <th>Slug</th>
+                            <th>Cờ</th>
+                            <th>Số truyện</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for country in countries %}
+                        <tr>
+                            <td>{{ country.id }}</td>
+                            <td>{{ country.name }}</td>
+                            <td>{{ country.slug }}</td>
+                            <td>
+                                {% if country.flag_image %}
+                                <img src="{{ base_url(country.flag_image) }}" alt="{{ country.name }}" class="img-thumbnail" style="max-width: 50px;">
+                                {% else %}
+                                <span class="text-muted">Không có</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ country.story_count|default(0) }}</td>
+                            <td>
+                                <a href="{{ site_url('admin/countries/edit/' ~ country.id) }}" class="btn btn-sm btn-info">
+                                    <i class="fas fa-edit"></i> Sửa
+                                </a>
+                                <button type="button" class="btn btn-sm btn-danger" data-toggle="modal" data-target="#deleteModal{{ country.id }}">
+                                    <i class="fas fa-trash"></i> Xóa
+                                </button>
+
+                                <!-- Delete Modal -->
+                                <div class="modal fade" id="deleteModal{{ country.id }}" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel{{ country.id }}" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="deleteModalLabel{{ country.id }}">Xác nhận xóa</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                Bạn có chắc chắn muốn xóa quốc gia <strong>{{ country.name }}</strong>?
+                                                {% if country.story_count > 0 %}
+                                                <div class="alert alert-warning mt-3">
+                                                    <i class="fas fa-exclamation-triangle"></i> Quốc gia này đang được sử dụng bởi {{ country.story_count }} truyện. Việc xóa có thể ảnh hưởng đến dữ liệu.
+                                                </div>
+                                                {% endif %}
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+                                                <a href="{{ site_url('admin/countries/delete/' ~ country.id) }}" class="btn btn-danger">Xóa</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="6" class="text-center">Không có quốc gia nào trong hệ thống.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    $(document).ready(function() {
+        $('#dataTable').DataTable({
+            "language": {
+                "url": "//cdn.datatables.net/plug-ins/1.10.24/i18n/Vietnamese.json"
+            }
+        });
+    });
+</script>
+{% endblock %}

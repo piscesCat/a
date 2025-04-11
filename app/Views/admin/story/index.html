@@ -1,0 +1,187 @@
+{% extends "layouts/admin.html" %}
+
+{% block title %}Quản lý truyện{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3">Quản Lý Truyện</h1>
+        <div>
+            <a href="{{ base_url() }}/admin/stories/new" class="btn btn-primary">
+                <i class="fas fa-plus-circle"></i> Thêm Truyện Mới
+            </a>
+        </div>
+    </div>
+
+    <!-- Success / Error messages -->
+    {% if session.getFlashdata('success') %}
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {{ session.getFlashdata('success') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endif %}
+
+    {% if session.getFlashdata('error') %}
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        {{ session.getFlashdata('error') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endif %}
+
+    <!-- Stories Table -->
+    <div class="card bg-dark">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-dark table-hover datatable">
+                    <thead>
+                        <tr>
+                            <th style="width: 60px;">ID</th>
+                            <th style="width: 80px;">Ảnh</th>
+                            <th>Tiêu đề</th>
+                            <th>Thông tin</th>
+                            <th>Thống kê</th>
+                            <th>Trạng thái</th>
+                            <th>Ngày tạo</th>
+                            <th class="text-center no-sort" style="width: 150px;">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for story in stories %}
+                        <tr data-story-id="{{ story.id }}">
+                            <td>{{ story.id }}</td>
+                            <td>
+                                <img src="{{ story.cover_image }}" class="table-img" alt="{{ story.title }}">
+                            </td>
+                            <td>
+                                <a href="{{ base_url() }}/story/{{ story.slug }}" class="text-light text-decoration-none fw-bold" target="_blank">
+                                    {{ story.title }}
+                                </a>
+                                <div class="small text-muted text-truncate" style="max-width: 300px;">
+                                    {{ story.description|limit_text(100) }}
+                                </div>
+                                <div class="mt-1">
+                                    {% if story.is_featured %}
+                                    <span class="badge bg-info me-1">Nổi bật</span>
+                                    {% endif %}
+
+                                    {% if story.is_hot %}
+                                    <span class="badge bg-danger me-1">Hot</span>
+                                    {% endif %}
+
+                                    {% if story.is_completed %}
+                                    <span class="badge bg-success me-1">Hoàn thành</span>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td>
+                                <div><i class="fas fa-user text-primary me-1"></i> {{ story.author_name }}</div>
+
+                                {% if story.country_name %}
+                                <div><i class="fas fa-globe-asia text-info me-1"></i> {{ story.country_name }}</div>
+                                {% endif %}
+
+                                {% if story.year %}
+                                <div><i class="fas fa-calendar-alt text-warning me-1"></i> {{ story.year }}</div>
+                                {% endif %}
+
+                                {% if story.type %}
+                                <div>
+                                    <i class="fas fa-film text-danger me-1"></i>
+                                    {% if story.type == 'single' %}
+                                        Phim lẻ
+                                    {% elseif story.type == 'series' %}
+                                        Phim bộ
+                                    {% elseif story.type == 'review' %}
+                                        Review
+                                    {% endif %}
+                                </div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div><i class="fas fa-eye text-info me-1"></i> {{ story.views|format_number }}</div>
+                                <div><i class="fas fa-star text-warning me-1"></i> {{ story.rating }}</div>
+                            </td>
+                            <td>
+                                {% if story.status == 'published' %}
+                                <span class="badge bg-success">Đã xuất bản</span>
+                                {% elseif story.status == 'draft' %}
+                                <span class="badge bg-secondary">Bản nháp</span>
+                                {% elseif story.status == 'completed' %}
+                                <span class="badge bg-primary">Hoàn thành</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ story.created_at|date('d/m/Y H:i') }}</td>
+                            <td class="text-center">
+                                <div class="btn-group btn-group-sm">
+                                    <a href="{{ base_url() }}/admin/chapters/story/{{ story.id }}" class="btn btn-success" data-bs-toggle="tooltip" title="Quản lý chương">
+                                        <i class="fas fa-list-ol"></i>
+                                    </a>
+                                    <a href="{{ base_url() }}/admin/stories/edit/{{ story.id }}" class="btn btn-primary" data-bs-toggle="tooltip" title="Sửa">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <button type="button" class="btn btn-danger btn-delete-story" data-id="{{ story.id }}" data-title="{{ story.title }}" data-bs-toggle="tooltip" title="Xóa">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark text-light">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Xác nhận xóa</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Bạn có chắc chắn muốn xóa truyện "<span id="storyTitle"></span>"?
+                <div class="alert alert-warning mt-3">
+                    <i class="fas fa-exclamation-triangle me-2"></i> Hành động này không thể hoàn tác. Tất cả chương, đánh giá và bình luận của truyện sẽ bị xóa.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <a href="#" id="confirmDelete" class="btn btn-danger">Xóa truyện</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+    $(document).ready(function() {
+        // Setup confirmation modal for delete
+        $('.btn-delete-story').on('click', function() {
+            const storyId = $(this).data('id');
+            const storyTitle = $(this).data('title');
+
+            $('#storyTitle').text(storyTitle);
+            $('#confirmDelete').attr('href', `{{ base_url() }}/admin/stories/delete/${storyId}`);
+            new bootstrap.Modal(document.getElementById('deleteModal')).show();
+        });
+
+        // Initialize tooltips
+        const tooltips = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+        [...tooltips].map(tooltip => new bootstrap.Tooltip(tooltip));
+
+        // Initialize datatable if available
+        if ($.fn.DataTable) {
+            $('.datatable').DataTable({
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.10.24/i18n/Vietnamese.json'
+                },
+                order: [[0, 'desc']]
+            });
+        }
+    });
+</script>
+{% endblock %}

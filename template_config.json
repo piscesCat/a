@@ -1,0 +1,12 @@
+{
+  "description": "A modern PHP project template with Composer dependency management. Features PSR-4 autoloading, MVC architecture support, and modern PHP 7+ practices. Includes PHPUnit testing setup, proper namespace organization, and security best practices.",
+  "required_fields": [],
+  "required_files": [
+    "public/index.php",
+    "composer.json"
+  ],
+  "lang": "PHP",
+  "framework": "PHP",
+  "style": "php_template",
+  "scene": "default_php_project"
+} 
